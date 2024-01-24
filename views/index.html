@@ -38,7 +38,6 @@
     }
     input {
       display: block;
-      /* استخدام وحدة نسبية للعرض بدلا من البكسل */
       width: 80%;
       height: 40px;
       border: 1px solid #0078d4;
@@ -48,7 +47,6 @@
     }
     button {
       display: block;
-      /* استخدام وحدة نسبية للعرض بدلا من البكسل */
       width: 60%;
       height: 50px;
       background-color: #0078d4;
@@ -58,7 +56,6 @@
       margin: 10px auto;
       cursor: pointer;
     }
-    /* إضافة استعلام وسائط لتطبيق أنماط مختلفة عندما يكون عرض الشاشة أقل من 600 بكسل */
     @media (max-width: 600px) {
       h1 {
         font-size: 24px;
@@ -96,30 +93,21 @@
     const owner = document.getElementById("owner");
     const repo = document.getElementById("repo");
     const submit = document.getElementById("submit");
-    const re_submitButton = document.getElementById("re_submit");
-    // إضافة مستمع لحدث submit على النموذج
-    form.addEventListener("submit", (event) => {
-      // منع السلوك الافتراضي للحدث
+    const re_submitButton = document.getElementById("re_submit"); form.addEventListener("submit", (event) => {
       event.preventDefault();
-      // احصل على قيم الحقول من النموذج
       const tokenValue = token.value;
       const ownerValue = owner.value;
       const repoValue = repo.value;
-      // إنشاء عنوان URL لإرسال الطلب إلى التطبيق الخلفي
       const url = `/adduser?token=${tokenValue}&owner=${ownerValue}&repo=${repoValue}`;
-      // إرسال طلب GET إلى العنوان URL والتعامل مع الاستجابة
       fetch(url)
         .then((response) => response.text())
         .then((data) => {
-          // عرض رسالة منبثقة تحتوي على البيانات المستلمة
           alert(data);
-          // مسح الحقول بعد الإرسال
           token.value = "";
           owner.value = "";
           repo.value = "";
         })
         .catch((error) => {
-          // عرض رسالة منبثقة تحتوي على خطأ في حالة وجود خطأ
           alert(error);
         });
     });
@@ -145,4 +133,4 @@
   </script>
 </body>
 </html>
-<!--Coded By MoroccoAI-->
+<!--Coded By MoroccoAI Team (Oussama&Amin)-->

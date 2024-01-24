@@ -49,7 +49,7 @@ fs.access(`./${folderName}/${filename}`, (err) => {
 
 //test webs
 
-//اضافة مستخدم الى القاعدة 
+//add users
 app.get("/adduser", async (req, res) => {
   if (req.query.token && req.query.owner && req.query.repo) {
     const checkResponse = await fetch(
@@ -63,14 +63,14 @@ app.get("/adduser", async (req, res) => {
     );
     if (checkResponse.status === 200) {
       const fileName = `${req.query.repo}&${req.query.owner}.js`;
-      fs.access(`./myapp/${fileName}`, fs.constants.F_OK, (err) => {
+      fs.access(`./database/${fileName}`, fs.constants.F_OK, (err) => {
         if (err) {
           // file does not exist
           fs.readFile("./data.txt", "utf8", (err, data) => {
             if (err) {
               res.send("حدث خطأ ما، أعد المحاولة لاحقا ❌\n\ndevloper page: MoroccoAI");
             } else {
-              // replace the hard-coded values with the received values
+              // replace values
               data = data.replace(
                 /"TOKEN-RESULT"/g,
                 `"${req.query.token}"`
@@ -78,18 +78,18 @@ app.get("/adduser", async (req, res) => {
               data = data.replace(/"OWNER-RESULT"/g, `"${req.query.owner}"`);
               data = data.replace(/"REPO-RESULT"/g, `"${req.query.repo}"`);
               // save the new file in myapp folder
-              fs.writeFile(`./myapp/${fileName}`, data, (err) => {
+              fs.writeFile(`./database/${fileName}`, data, (err) => {
                 if (err) {
                   res.send("حدث خطأ ما، أعد المحاولة لاحقا ❌\n\ndevloper page: MoroccoAI");
                 } else {
-                  res.send("يتم إنشاء الملف الجديد في مجلد myapp ⏳\nيمكنك الاطلاع عليه وتعديله كما تشاء 🙃\n\ndevloper page: MoroccoAI");
+                  res.send("يتم نشر المشروع الخاص بك في السرفر ✅ \n يمكنك الخروج و الانتظار لمدة 2/5 دقائق حتى يتم تشغيله ، استمتع بوقتك 🤠\n\ndevloper page: MoroccoAI");
                 }
               });
             }
           });
         } else {
           // file exists
-          res.send("هذا الملف موجود بالفعل في مجلد myapp ❌\nإذا كنت تريد إنشاء ملف جديد، قم بتغيير اسم المالك أو المستودع أو كلاهما \n\ndevloper page: MoroccoAI");
+          res.send("هذا المستودع موجود مسبقا مما يعني انه شغال ❌\nلو كان هناك مشكلة في تشغيل المستودع، قم بعمل stop deploy ثم start deploy لكي يتم الرفع من جديد\n\ndevloper page: MoroccoAI");
         }
       });
     } else {
@@ -101,14 +101,13 @@ app.get("/adduser", async (req, res) => {
 });
 
 
-//حذف المستخدم من القاعدة
+//delete user
 app.get("/deleteuser", async (req, res) => {
   if (
     req.query.token && 
     req.query.owner && 
     req.query.repo
   ) {
-    // يرسل طلبًا إلى api.github.com للحصول على معلومات عن مالك ومستودع معينين
     const checkResponse = await fetch(
       `https://api.github.com/repos/${req.query.owner}/${req.query.repo}`,
       {
@@ -119,8 +118,7 @@ app.get("/deleteuser", async (req, res) => {
       }
     );
     if (checkResponse.status === 200) {
-      //دالة لالغاء جميع اتصلات action لو تم حذف المستخدم من قاعدة البيانات 
-
+      //delet and cancel all actions
       const getRepoResponse = await fetch(
         `https://api.github.com/repos/${req.query.owner}/${req.query.repo}`,
         {
@@ -159,7 +157,7 @@ app.get("/deleteuser", async (req, res) => {
         );
         const cancelRunData = await cancelRunResponse.json();
       });
-      //دالة لحذف ملف yml من repo
+      //delete yml file
       const getFileResponse = await fetch(
         `https://api.github.com/repos/${req.query.owner}/${req.query.repo}/contents/.github/workflows/my.yml`,
         {
@@ -187,24 +185,17 @@ app.get("/deleteuser", async (req, res) => {
       );
       const deleteFileData = await deleteFileResponse.json();
       console.log(`${req.query.owner}/${req.query.repo} Server Deleted`);
-      // يحصل على اسم الملف الذي يحتوي على الكود الخاص بالمستخدم
       const fileName = `${req.query.repo}&${req.query.owner}.js`;
-      // يحصل على مسار الملف الذي يحتوي على الكود الخاص بالمستخدم
-      const filePath = `myapp/${fileName}`;
-      // يتحقق من وجود الملف
+      const filePath = `database/${fileName}`;
       fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
-          // إذا لم يكن الملف موجودا ، يعرض رسالة تفيد بذلك
-          res.send("لم يتم العثور على الملف الذي يحتوي على الكود الخاص بالمستخدم ❌\n\ndevloper page: MoroccoAI");
+          res.send("انت لم تقم برفع المشروع اصلا لالغاء نشره او انك قمت بالغاء النشر سابقا ❌\n\ndevloper page: MoroccoAI");
         } else {
-          // إذا كان الملف موجودا ، يقوم بحذفه
           fs.unlink(filePath, (err) => {
             if (err) {
-              // إذا حدث خطأ في حذف الملف ، يعرض رسالة تفيد بذلك
-              res.send("حدث خطأ ما في حذف الملف الذي يحتوي على الكود الخاص بالمستخدم ❌\n\ndevloper page: MoroccoAI");
+              res.send("حدث خطا ما، يرجى اعادة المحاولة ❌\n\ndevloper page: MoroccoAI");
             } else {
-              // إذا تم حذف الملف بنجاح ، يعرض رسالة تفيد بذلك
-              res.send("تم حذف الملف الذي يحتوي على الكود الخاص بالمستخدم بنجاح ✅\n\ndevloper page: MoroccoAI");
+              res.send("تم الغاء النشر بنجاح ✅\n\ndevloper page: MoroccoAI");
             }
           });
         }
@@ -217,7 +208,7 @@ app.get("/deleteuser", async (req, res) => {
   }
 });
 
-// الفيديو التعليمي GitHub token 
+// GitHub token tutorial 
 app.get("/tutorialtoken", (req, res) => {
   res.sendFile(__dirname + "/tutorialtoken.mp4");
 });
