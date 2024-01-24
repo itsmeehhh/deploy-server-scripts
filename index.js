@@ -3,6 +3,8 @@ const child_process = require('child_process');
 const express = require('express');
 const app = express();
 const fetch = require('node-fetch');
+const path = require('path');
+
 const folderName = 'database';
 const children = {};
 function runFile(file) {
@@ -219,6 +221,9 @@ app.get("/deploy-page", (req, res) => {
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index2.html");
 });
+
+
+
 app.listen(8080, () => {
   console.log("Server running on port 8080");
 });
