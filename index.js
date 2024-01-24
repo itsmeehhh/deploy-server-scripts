@@ -222,7 +222,31 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index2.html");
 });
 
-
+//قراءة محتوى database
+app.get('/deploy-datas', (req, res) => {
+  fs.readdir('database', (err, files) => {
+    if (err) {
+      res.status(500).send('حدث خطأ في قراءة المجلد');
+    } else {
+      let list = '<ul>';
+      for (let file of files) {
+        list += `<li><a href="/deploy-datas/${file}" style="font-size: 30px;">${file}</a></li>`;
+        }
+        list += '</ul>';
+        res.send(list);
+    }
+  });
+});
+app.get('/deploy-datas/:filename', (req, res) => {
+  let filename = req.params.filename;
+fs.readFile(`database/${filename}`, 'utf8', (err, data) => {
+    if (err) {
+      res.status(500).send('حدث خطأ في قراءة الملف');
+    } else {
+      res.send(data);
+    }
+  });
+});
 
 app.listen(8080, () => {
   console.log("Server running on port 8080");
