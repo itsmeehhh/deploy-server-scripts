@@ -213,8 +213,11 @@ app.get("/tutorialtoken", (req, res) => {
   res.sendFile(__dirname + "/tutorialtoken.mp4");
 });
 
-app.get("/", (req, res) => {
+app.get("/deploy-page", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
+});
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/views/index2.html");
 });
 app.listen(8080, () => {
   console.log("Server running on port 8080");
