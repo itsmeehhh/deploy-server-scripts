@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoroccoAI server</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap');
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      font-size: 10px;
+      color: black;
+      background-color: transparent;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #968D8D;
+    }
+    h1 {
+      font-family: 'Ubuntu', sans-serif;
+      color: #0078d4;
+      font-size: 36px;
+      margin-top: 20px;
+    }
+    img {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+    form {
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    input {
+      display: block;
+      /* استخدام وحدة نسبية للعرض بدلا من البكسل */
+      width: 80%;
+      height: 40px;
+      border: 1px solid #0078d4;
+      border-radius: 5px;
+      margin: 10px auto;
+      padding: 10px;
+    }
+    button {
+      display: block;
+      /* استخدام وحدة نسبية للعرض بدلا من البكسل */
+      width: 60%;
+      height: 50px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin: 10px auto;
+      cursor: pointer;
+    }
+    /* إضافة استعلام وسائط لتطبيق أنماط مختلفة عندما يكون عرض الشاشة أقل من 600 بكسل */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 24px;
+      }
+      img {
+        width: 150px;
+        height: 150px;
+      }
+      input {
+        height: 30px;
+      }
+      button {
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>MoroccoAI Servers</h1>
+  <img src="https://telegra.ph/file/1f6dbd646e3605f4a0895.png" alt="dev img">
+  <form id="user-form">
+    <input type="text" id="token" name="token" placeholder="Enter your github token" required>
+    <input type="text" id="owner" name="owner" placeholder="Enter your user name " required>
+    <input type="text" id="repo" name="repo" placeholder="Enter your repo name" required>
+    <button type="submit" id="submit">start deploy</button>
+    <button type="button" id="re_submit">stop deploy</button>
+    </form>
+  <footer>
+  <p>-- How to get GitHub token? <a href="/tutorialtoken">Here's how</a></p>
+  <p>-- developer page on <a href="https://fb.com/Morocco.openai">Facebook</a></p>
+  </footer>
+    <script>
+    const form = document.getElementById("user-form");
+    const token = document.getElementById("token");
+    const owner = document.getElementById("owner");
+    const repo = document.getElementById("repo");
+    const submit = document.getElementById("submit");
+    const re_submitButton = document.getElementById("re_submit");
+    // إضافة مستمع لحدث submit على النموذج
+    form.addEventListener("submit", (event) => {
+      // منع السلوك الافتراضي للحدث
+      event.preventDefault();
+      // احصل على قيم الحقول من النموذج
+      const tokenValue = token.value;
+      const ownerValue = owner.value;
+      const repoValue = repo.value;
+      // إنشاء عنوان URL لإرسال الطلب إلى التطبيق الخلفي
+      const url = `/adduser?token=${tokenValue}&owner=${ownerValue}&repo=${repoValue}`;
+      // إرسال طلب GET إلى العنوان URL والتعامل مع الاستجابة
+      fetch(url)
+        .then((response) => response.text())
+        .then((data) => {
+          // عرض رسالة منبثقة تحتوي على البيانات المستلمة
+          alert(data);
+          // مسح الحقول بعد الإرسال
+          token.value = "";
+          owner.value = "";
+          repo.value = "";
+        })
+        .catch((error) => {
+          // عرض رسالة منبثقة تحتوي على خطأ في حالة وجود خطأ
+          alert(error);
+        });
+    });
+    re_submitButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      const tokenValue = token.value;
+      const ownerValue = owner.value;
+      const repoValue = repo.value;
+      const url = `/deleteuser?token=${tokenValue}&owner=${ownerValue}&repo=${repoValue}`;
+
+      fetch(url)
+        .then((response) => response.text())
+        .then((data) => {
+          alert(data);
+          token.value = "";
+          owner.value = "";
+          repo.value = "";
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    });
+  </script>
+</body>
+</html>
+<!--Coded By MoroccoAI-->

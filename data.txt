@@ -1,0 +1,265 @@
+const fs =require("fs");
+const http =require("http");
+const fetch =require("node-fetch");
+const schedule =require("node-schedule");
+const express =require("express");
+const app = express();
+
+let data = [{
+"token":"TOKEN-RESULT",
+"owner":"OWNER-RESULT",
+"repo":"REPO-RESULT"},]
+
+//دالة لتشغيل action للمستخدم
+const handleUser = async (user) => {
+  const { token, owner, repo } = user;
+  try {
+    const getRepoResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    const getRepoData = await getRepoResponse.json()
+    const branch = getRepoData.default_branch;
+
+    const getFileResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/.github/workflows/my.yml?ref=${branch}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    const getFileData = await getFileResponse.json();
+    if (getFileData.message === "Not Found") {
+      const fileContent = await fetch(
+        "https://raw.githubusercontent.com/OS-OFC/TERMOS-WABOT/main/my.yml"
+      );
+      const content = await fileContent.text();
+      const encodedContent = Buffer.from(content).toString("base64");
+
+      const message = "MoroccoAI Server ✅";
+      const data = {
+        message,
+        content: encodedContent,
+        branch,
+      };
+      const createFileResponse = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/contents/.github/workflows/my.yml`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${token}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      const createFileData = await createFileResponse.json();
+      console.log(`${owner}/${repo} server Created`);
+    } else {
+      checkWorkflowStatus(user);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+//دالة لاعادة تشغيل action عندما يتوقف
+const updateFile = async (user) => {
+  const { token, owner, repo } = user; 
+  try {
+    //كشف الفرع الافتراضي (branch)
+    const getRepoResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    const getRepoData = await getRepoResponse.json()
+    const branch = getRepoData.default_branch;
+
+    const getFileResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/.github/workflows/my.yml?ref=${branch}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    const getFileData = await getFileResponse.json();
+    const content = getFileData.content;
+    const sha = getFileData.sha;
+
+    const message = "MoroccoAI Server ✅";
+    const data = {
+      message,
+      content,
+      sha,
+      branch,
+    };
+
+    const updateFileResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/.github/workflows/my.yml`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    const updateFileData = await updateFileResponse.json();
+
+    console.log(`${owner}/${repo} server Restart`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+//اعادة تشغيل action عندما يتوقف
+const checkWorkflowStatus = async (user) => {
+  const { token, owner, repo } = user; 
+  try {
+    //default branch 
+    const getRepoResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    const getRepoData = await getRepoResponse.json()
+    const branch = getRepoData.default_branch;
+
+    const getWorkflowsResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/actions/runs?branch=${branch}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    const getWorkflowsData = await getWorkflowsResponse.json();
+    const workflows = getWorkflowsData.workflow_runs;
+    // check if workflows is defined and not null
+    if (workflows && workflows.length > 0) {
+      const status = workflows[0].status;
+      const conclusion = workflows[0].conclusion;
+
+      if (status === "completed" && conclusion === "failure") {
+        updateFile(user);
+      }}
+  } catch (error) {
+   console.error(error);
+  }
+};
+
+//دالة لحذف action الزائد
+const checkActionsCount = async (user) => {
+  const { token, owner, repo } = user;
+  try {
+    //default branch
+    const getRepoResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    const getRepoData = await getRepoResponse.json();
+    const branch = getRepoData.default_branch;
+
+    const getWorkflowsResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/actions/runs?branch=${branch}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    const getWorkflowsData = await getWorkflowsResponse.json();
+    const workflows = getWorkflowsData.workflow_runs;
+    if (workflows && workflows.length > 0) {
+      let count = 0;
+      let ids = [];
+      for (const workflow of workflows) {
+        const status = workflow.status;
+        const conclusion = workflow.conclusion;
+        if (status === "in_progress" && conclusion === null) {
+          count++;
+          ids.push(workflow.id);
+        }
+      }
+      if (count > 1) {
+        for (let i = 1; i < ids.length; i++) {
+          const cancelRunResponse = await fetch(
+            `https://api.github.com/repos/${owner}/${repo}/actions/runs/${ids[i]}/cancel`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `token ${token}`,
+                Accept: "application/vnd.github.v3+json",
+              },
+            }
+          );
+          const cancelRunData = await cancelRunResponse.json();
+        }
+        console.log(`${owner}/${repo} extra actions cancelled`);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+//تحقق كل 5 تواني لتشغيل action عندما يتوقف
+const loopData = () => {
+  data = [{
+"token":"TOKEN-RESULT",
+"owner":"OWNER-RESULT",
+"repo":"REPO-RESULT"}]
+  for (const user of data) {
+    try {
+      handleUser(user);
+      setInterval(() => checkWorkflowStatus(user), 5000);
+    } catch (error) {
+      console.error(error);
+      continue;
+    }
+  }
+};
+loopData();
+
+//الغاء action الاخرين والاحتفاظ بأول واحد
+const checkaction = () => {
+  data = [{
+"token":"TOKEN-RESULT",
+"owner":"OWNER-RESULT",
+"repo":"REPO-RESULT"}]
+  for (const user of data) {
+    try {
+      handleUser(user);
+      setInterval(() => checkActionsCount(user), 5000);
+    } catch (error) {
+      console.error(error);
+      continue;
+    }
+  }
+};
+checkaction();
