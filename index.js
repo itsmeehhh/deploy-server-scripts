@@ -182,6 +182,7 @@ app.get("/deleteuser", async (req, res) => {
           body: JSON.stringify({
             message: "Server Disconnected ✅",
             sha,
+            branch: getRepoData.default_branch,
           }),
         }
       );
