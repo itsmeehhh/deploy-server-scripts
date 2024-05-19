@@ -229,22 +229,45 @@ app.get('/deploy-datas', (req, res) => {
     if (err) {
       res.status(500).send('حدث خطأ في قراءة المجلد');
     } else {
-      let list = '<ul>';
+      let list = '<ul style="list-style-type: none;">';
       for (let file of files) {
-        list += `<li><a href="/deploy-datas/${file}" style="font-size: 30px;">${file}</a></li>`;
-        }
-        list += '</ul>';
-        res.send(list);
+        list += `<li style="margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                   <div style="float: right;">${file}</div>
+                   <div style="float: left;">
+                     <a href="/deploy-datas/${file}" style="font-size: 20px;">view</a> |
+                     <form action="/delete-file/${file}" method="post" onsubmit="return confirm('هل أنت متأكد من أنك تريد حذف الملف ${file} من قاعدة البيانات؟');" style="display: inline;">
+                       <button type="submit" style="font-size: 20px; color: red; background: none; border: none; padding: 0; cursor: pointer;">delete</button>
+                     </form>
+                   </div>
+                   <div style="clear: both;"></div>
+                 </li>`;
+      }
+      list += '</ul>';
+      res.send(list);
     }
   });
 });
+
+
 app.get('/deploy-datas/:filename', (req, res) => {
   let filename = req.params.filename;
-fs.readFile(`database/${filename}`, 'utf8', (err, data) => {
+  fs.readFile(`database/${filename}`, 'utf8', (err, data) => {
     if (err) {
       res.status(500).send('حدث خطأ في قراءة الملف');
     } else {
       res.send(data);
+    }
+  });
+});
+
+app.get('/delete-file/:filename', (req, res) => {
+  let filename = req.params.filename;
+  fs.unlink(`database/${filename}`, (err) => {
+    if (err) {
+      res.status(500).send('حدث خطأ في حذف الملف');
+    } else {
+      // إعادة توجيه المستخدم إلى القائمة بعد الحذف
+      res.redirect('/deploy-datas');
     }
   });
 });
