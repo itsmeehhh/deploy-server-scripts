@@ -49,8 +49,6 @@ fs.access(`./${folderName}/${filename}`, (err) => {
   }
 });
 
-//test webs
-
 //add users
 app.get("/adduser", async (req, res) => {
   if (req.query.token && req.query.owner && req.query.repo) {
@@ -236,6 +234,7 @@ app.get("/tutorialtoken", (req, res) => {
   res.sendFile(__dirname + "/tutorialtoken.mp4");
 });
 
+//الصفحات الاساسية
 app.get("/deploy-page", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
