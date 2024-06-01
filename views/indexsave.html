@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoroccoAI server</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap');
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      font-size: 10px;
+      color: black;
+      background-color: transparent;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #968D8D;
+    }
+    h1 {
+      font-family: 'Ubuntu', sans-serif;
+      color: #0078d4;
+      font-size: 36px;
+      margin-top: 20px;
+    }
+    img {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+    form {
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    textarea {
+      display: block;
+      width: 80%;
+      height: 120px; /* ثلاثة أضعاف الارتفاع الأصلي */
+      border: 1px solid #0078d4;
+      border-radius: 5px;
+      margin: 10px auto;
+      padding: 10px;
+    }
+    input {
+      display: block;
+      width: 80%;
+      height: 40px;
+      border: 1px solid #0078d4;
+      border-radius: 5px;
+      margin: 10px auto;
+      padding: 10px;
+    }
+    button {
+      display: block;
+      width: 60%;
+      height: 50px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin: 10px auto;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 24px;
+      }
+      img {
+        width: 150px;
+        height: 150px;
+      }
+      textarea {
+        height: 90px; /* ثلاثة أضعاف الارتفاع الأصلي */
+      }
+      input {
+        height: 30px;
+      }
+      button {
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>MoroccoAI Servers</h1>
+  <img src="https://telegra.ph/file/1f6dbd646e3605f4a0895.png" alt="dev img">
+  <form id="user-form">
+    <textarea id="content" name="content" placeholder="Enter your code" required></textarea>
+    <input type="text" id="filename" name="filename" placeholder="Enter the filename" required>
+    <button type="submit" id="submit">deploy to server</button>
+  </form>
+  <footer>
+  <p>-- developer page on <a href="https://fb.com/Morocco.openai">Facebook</a></p>
+  </footer>
+  <script>
+    const form = document.getElementById("user-form");
+    const content = document.getElementById("content");
+    const filename = document.getElementById("filename");
+    const submit = document.getElementById("submit");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const contentValue = content.value;
+      const filenameValue = filename.value;
+      const url = `/save?text=${contentValue}&filename=${filenameValue}`;
+      fetch(url)
+        .then((response) => response.text())
+        .then((data) => {
+          alert(data);
+          content.value = "";
+          filename.value = "";
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    });
+  </script>
+</body>
+</html>
+<!--Coded By MoroccoAI Team (Oussama&Amin)-->

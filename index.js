@@ -210,6 +210,26 @@ app.get("/deleteuser", async (req, res) => {
     res.send("يرجى ملأ كل الحقول ❌\n\ndevloper page: MoroccoAI");
   }
 });
+// حفظ كود الى مجلد database 
+app.get('/save', (req, res) => {
+  const text = req.query.text;
+  const filename = req.query.filename;
+  const filePath = `./database/${filename}.js`;
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      fs.writeFile(filePath, text, (writeErr) => {
+        if (writeErr) {
+          console.error(writeErr);
+          res.send('حدث خطأ أثناء رفع الكود ، حاول مجددا! ');
+        } else {
+          res.send('تم رفع الكود الى قاعدة البيانات بنجاح ✅.');
+        }
+      });
+    } else {
+      res.send('حاول استخدام إسم مختلف لأن هذا الاسم موجود بالفعل في قاعدة البيانات!');
+    }
+  });
+});
 
 // GitHub token tutorial 
 app.get("/tutorialtoken", (req, res) => {
@@ -221,6 +241,9 @@ app.get("/deploy-page", (req, res) => {
 });
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index2.html");
+});
+app.get("/deploy-code", (req, res) => {
+  res.sendFile(__dirname + "/views/indexsave.html");
 });
 
 //قراءة محتوى database
