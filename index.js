@@ -371,33 +371,26 @@ app.get('/viewlogs/:filename', (req, res) => {
     res.sendFile(path.join(__dirname, './views/viewhelper.html'));
   });
 });
-//
-
+//حفظ ملف الى مجلد database 
 app.use(fileUpload());
-
-// نقطة النهاية لتحميل الملف
 app.post('/upload', (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send('لم يتم تحميل أي ملف.');
   }
-
-  // 'file' هو اسم الحقل في النموذج
   let uploadedFile = req.files.file;
+  if (uploadedFile.name.endsWith('.js')) {
+    let filename = req.body.filename || uploadedFile.name;
+    let savePath = path.join(__dirname, 'database', filename);
 
-  // استخدم اسم الملف من الطلب أو قم بإنشاء واحد جديد
-  let filename = req.body.filename || uploadedFile.name;
-
-  // مسار حفظ الملف
-  let savePath = path.join(__dirname, 'database', filename);
-
-  // استخدم الوظيفة mv() لوضع الملف في المجلد 'database'
-  uploadedFile.mv(savePath, (err) => {
-    if (err) {
-      return res.status(500).send(err);
-    }
-
-    res.send('تم تحميل الملف بنجاح.');
-  });
+    uploadedFile.mv(savePath, (err) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      res.send('تم تحميل الملف بنجاح.');
+    });
+  } else {
+    res.status(400).send('يمكن رفع الملفات بصيغة .js فقط.');
+  }
 });
 
 //ارجاع المستخدم الى الصفحة الرئيسية اذا كان الخادم غير موجود

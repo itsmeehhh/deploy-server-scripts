@@ -126,21 +126,29 @@
     const upload = document.getElementById("upload");
 
     upload.addEventListener("click", () => {
-      const formData = new FormData();
-      formData.append("file", file.files[0]);
-      formData.append("filename", filename.value);
+      const fileInput = document.getElementById("file");
+      const file = fileInput.files[0];
 
-      fetch('/upload', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        alert(data);
-      })
-      .catch(error => {
-        alert(error);
-      });
+      // التحقق من صيغة الملف
+      if (file && file.name.endsWith('.js')) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("filename", filename.value);
+
+        fetch('/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+          alert(data);
+        })
+        .catch(error => {
+          alert(error);
+        });
+      } else {
+        alert('يمكن رفع الملفات بصيغة .js فقط.');
+      }
     });
   </script>
 </body>
