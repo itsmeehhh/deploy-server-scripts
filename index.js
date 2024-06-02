@@ -282,7 +282,7 @@ app.get('/deploy-datas', (req, res) => {
                    <div style="float: right;">${file}</div>
                    <div style="float: left;">
                      <a href="/deploy-datas/${file}" style="font-size: 20px;">view</a> |
-                     <form action="/delete-file/${file}" method="post" onsubmit="return confirm('هل أنت متأكد من أنك تريد حذف الملف ${file} من قاعدة البيانات؟');" style="display: inline;">
+                     <form action="/delete-file/${file}" method="get" onsubmit="return confirm('هل أنت متأكد من أنك تريد حذف الملف ${file} من قاعدة البيانات؟');" style="display: inline;">
                        <button type="submit" style="font-size: 20px; color: red; background: none; border: none; padding: 0; cursor: pointer;">delete</button>
                      </form>
                    </div>
