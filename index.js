@@ -2,23 +2,40 @@ const fs = require('fs');
 const child_process = require('child_process');
 const express = require('express');
 const app = express();
-const fetch = require('node-fetch');
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 const path = require('path');
 
 const { exec } = require('child_process');
 
 const folderName = 'database';
 const children = {};
+const logs = {};
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+io.on('connection', (socket) => {
+  console.log('New client connected');
+  socket.on('requestLogs', (filename) => {
+    socket.emit('logs', logs[filename]);
+  });
+});
 
 function runFile(file) {
   const filePath = `./${folderName}/${file}`;
   const child = child_process.spawn('node', [filePath]);
+  logs[file] = [];
   child.stdout.on('data', (data) => {
-    console.log(data.toString());
+    const message = data.toString();
+    console.log(message);
+    logs[file].push(message);
+    io.emit('newLog', { file, message });
   });
   child.stderr.on('data', (data) => {
     const message = data.toString();
     console.error(message);
+    logs[file].push(message);
+    io.emit('newLog', { file, message });
     if (message.includes('Cannot find module')) {
       const moduleName = message.match(/'([^']+)'/)[1];
       stopFile(file);
@@ -29,6 +46,7 @@ function runFile(file) {
   });
   child.on('close', (code) => {
     console.log(`child process exited with code ${code}`);
+    io.emit('newLog', { file, message: `Process exited with code ${code}` });
   });
   children[file] = child;
 }
@@ -39,6 +57,7 @@ function stopFile(file) {
     child.kill('SIGINT');
   }
   delete children[file];
+  delete logs[file];
 }
 
 function installModule(moduleName, callback) {
@@ -73,7 +92,6 @@ fs.watch(folderName, (eventType, filename) => {
     });
   }
 });
-
 //add users
 app.get("/adduser", async (req, res) => {
   if (req.query.token && req.query.owner && req.query.repo) {
@@ -269,7 +287,6 @@ app.get("/", (req, res) => {
 app.get("/deploy-code", (req, res) => {
   res.sendFile(__dirname + "/views/indexsave.html");
 });
-
 //قراءة محتوى database
 app.get('/deploy-datas', (req, res) => {
   fs.readdir('database', (err, files) => {
@@ -281,9 +298,10 @@ app.get('/deploy-datas', (req, res) => {
         list += `<li style="margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
                    <div style="float: right;">${file}</div>
                    <div style="float: left;">
-                     <a href="/deploy-datas/${file}" style="font-size: 20px;">view</a> |
+                     <a href="/deploy-datas/${file}" style="font-size: 20px; text-decoration: underline;">view</a> |
+                     <a href="/viewlogs/${file}" style="font-size: 20px; text-decoration: underline; margin-left: 10px; background-color: #f0f0f0; padding: 5px;">viewlogs</a> |
                      <form action="/delete-file/${file}" method="get" onsubmit="return confirm('هل أنت متأكد من أنك تريد حذف الملف ${file} من قاعدة البيانات؟');" style="display: inline;">
-                       <button type="submit" style="font-size: 20px; color: red; background: none; border: none; padding: 0; cursor: pointer;">delete</button>
+                       <button type="submit" style="font-size: 20px; color: red; background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline;">delete</button>
                      </form>
                    </div>
                    <div style="clear: both;"></div>
@@ -295,7 +313,6 @@ app.get('/deploy-datas', (req, res) => {
   });
 });
 
-
 app.get('/deploy-datas/:filename', (req, res) => {
   let filename = req.params.filename;
   fs.readFile(`database/${filename}`, 'utf8', (err, data) => {
@@ -306,19 +323,57 @@ app.get('/deploy-datas/:filename', (req, res) => {
     }
   });
 });
-
+// حذف الملف من database
 app.get('/delete-file/:filename', (req, res) => {
   let filename = req.params.filename;
   fs.unlink(`database/${filename}`, (err) => {
     if (err) {
       res.status(500).send('حدث خطأ في حذف الملف');
     } else {
-      // إعادة توجيه المستخدم إلى القائمة بعد الحذف
       res.redirect('/deploy-datas');
     }
   });
 });
+//viewlogs 
+app.get('/viewlogs/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, folderName, filename);
 
-app.listen(8080, () => {
-  console.log("Server running on port 8080");
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      return res.status(404).send(`
+        <!DOCTYPE html>
+        <html lang="ar">
+        <head>
+          <meta charset="UTF-8">
+          <title>الملف غير موجود</title>
+          <style>
+            body {
+              height: 100vh;
+              margin: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background-color: #000;
+              color: #fff;
+              font-family: 'Courier New', Courier, monospace;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>لا يمكن عرض السجلات لان الملف غير موجود اصلا</h1>
+        </body>
+        </html>
+      `);
+    }
+    res.sendFile(path.join(__dirname, './views/viewhelper.html'));
+  });
+});
+
+//ارجاع المستخدم الى الصفحة الرئيسية اذا كان الخادم غير موجود
+app.get('*', (req, res) => {
+  res.redirect('/');
+});
+server.listen(8080, () => {
+  console.log('Server is running on port 8080');
 });

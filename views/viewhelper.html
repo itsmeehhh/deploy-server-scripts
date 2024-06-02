@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>مشاهدة السجلات</title>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const socket = io.connect();
+    const logsContainer = document.getElementById('logs');
+    const filename = window.location.pathname.split('/').pop();
+    document.getElementById('filename').textContent = filename + ' logs';
+
+    socket.on('newLog', function (data) {
+      if (data.file === filename) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = data.message;
+        logsContainer.appendChild(messageElement);
+        logsContainer.scrollTop = logsContainer.scrollHeight;
+      }
+    });
+
+    socket.emit('requestLogs', filename);
+
+    socket.on('logs', function (logs) {
+      logs.forEach(function (log) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = log;
+        logsContainer.appendChild(messageElement);
+      });
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+    });
+  });
+
+</script>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh;
+  }
+  #logs {
+    width: 80%;
+    max-width: 800px;
+    height: 70vh;
+    overflow-y: scroll;
+    background-color: #222;
+    padding: 20px;
+    margin-top: 40px;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    font-size: 1em; /* تقليل حجم الخط ليكون أصغر */
+    border-radius: 25px;
+    border: 5px solid #555;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  #logs div {
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 6em;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+<h1 id="filename">filename logs</h1>
+<div id="logs"></div>
+</body>
+</html>
+
+
