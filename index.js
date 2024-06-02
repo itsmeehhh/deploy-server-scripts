@@ -3,14 +3,16 @@ const child_process = require('child_process');
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
+const fileUpload = require('express-fileupload');
 const io = require('socket.io')(server);
 const path = require('path');
-
 const { exec } = require('child_process');
-
 const folderName = 'database';
 const children = {};
 const logs = {};
+
+
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -367,6 +369,34 @@ app.get('/viewlogs/:filename', (req, res) => {
       `);
     }
     res.sendFile(path.join(__dirname, './views/viewhelper.html'));
+  });
+});
+//
+
+app.use(fileUpload());
+
+// نقطة النهاية لتحميل الملف
+app.post('/upload', (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('لم يتم تحميل أي ملف.');
+  }
+
+  // 'file' هو اسم الحقل في النموذج
+  let uploadedFile = req.files.file;
+
+  // استخدم اسم الملف من الطلب أو قم بإنشاء واحد جديد
+  let filename = req.body.filename || uploadedFile.name;
+
+  // مسار حفظ الملف
+  let savePath = path.join(__dirname, 'database', filename);
+
+  // استخدم الوظيفة mv() لوضع الملف في المجلد 'database'
+  uploadedFile.mv(savePath, (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    res.send('تم تحميل الملف بنجاح.');
   });
 });
 

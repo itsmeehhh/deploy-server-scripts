@@ -88,13 +88,16 @@
 <body>
   <h1>MoroccoAI Servers</h1>
   <img src="https://telegra.ph/file/1f6dbd646e3605f4a0895.png" alt="dev img">
-  <form id="user-form">
+  <form id="user-form" enctype="multipart/form-data">
     <textarea id="content" name="content" placeholder="Enter your code" required></textarea>
     <input type="text" id="filename" name="filename" placeholder="Enter the filename" required>
     <button type="submit" id="submit">deploy to server</button>
+    <!-- زر جديد لتحميل الملفات -->
+    <input type="file" id="file" name="file" >
+    <button type="button" id="upload">or upload file</button>
   </form>
   <footer>
-  <p>-- developer page on <a href="https://fb.com/Morocco.openai">Facebook</a></p>
+    <p>-- developer page on <a href="https://fb.com/Morocco.openai">Facebook</a></p>
   </footer>
   <script>
     const form = document.getElementById("user-form");
@@ -118,7 +121,29 @@
           alert(error);
         });
     });
+
+    const file = document.getElementById("file");
+    const upload = document.getElementById("upload");
+
+    upload.addEventListener("click", () => {
+      const formData = new FormData();
+      formData.append("file", file.files[0]);
+      formData.append("filename", filename.value);
+
+      fetch('/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        alert(data);
+      })
+      .catch(error => {
+        alert(error);
+      });
+    });
   </script>
 </body>
 </html>
-<!--Coded By MoroccoAI Team (Oussama&Amin)-->
+
+  
