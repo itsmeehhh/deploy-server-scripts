@@ -8,6 +8,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const socket = io.connect();
     const logsContainer = document.getElementById('logs');
+    const autoScrollCheckbox = document.getElementById('autoScroll');
     const filename = window.location.pathname.split('/').pop();
     document.getElementById('filename').textContent = filename + ' logs';
 
@@ -16,7 +17,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const messageElement = document.createElement('div');
         messageElement.textContent = data.message;
         logsContainer.appendChild(messageElement);
-        logsContainer.scrollTop = logsContainer.scrollHeight;
+        // تعديل هنا: التحقق من حالة الخانة قبل التمرير
+        if (autoScrollCheckbox.checked) {
+          logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
       }
     });
 
@@ -28,7 +32,10 @@ document.addEventListener('DOMContentLoaded', function () {
         messageElement.textContent = log;
         logsContainer.appendChild(messageElement);
       });
-      logsContainer.scrollTop = logsContainer.scrollHeight;
+      // تعديل هنا: التحقق من حالة الخانة قبل التمرير
+      if (autoScrollCheckbox.checked) {
+        logsContainer.scrollTop = logsContainer.scrollHeight;
+      }
     });
   });
 
@@ -78,8 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
 </head>
 <body>
 <h1 id="filename">filename logs</h1>
+<label for="autoScroll">Enable AutoScroll down</label>
+<input type="checkbox" id="autoScroll" checked>
 <div id="logs"></div>
 </body>
 </html>
-
-

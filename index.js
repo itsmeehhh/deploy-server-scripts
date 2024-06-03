@@ -34,7 +34,7 @@ function runFile(file) {
   });
   child.stderr.on('data', (data) => {
     const message = data.toString();
-    console.error(message);
+    console.error(`${file} : Code error, see logs for more`);
     logs[file].push(message);
     io.emit('newLog', { file, message });
     if (message.includes('Cannot find module')) {
