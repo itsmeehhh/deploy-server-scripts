@@ -62,32 +62,32 @@ document.addEventListener('DOMContentLoaded', function () {
     font-family: 'Courier New', Courier, monospace;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: flex-end; /* تغيير لضمان أن الحاوية في الأسفل */
     align-items: center;
-    height: 100vh;
     position: relative;
+    overflow: hidden;
   }
 
   #logs {
-    width: 80%;
-    max-width: 800px;
-    height: 70vh;
+    width: 800px; /* ثابت بدلاً من النسب المئوية */
+    height: 1000px; /* ضعف الارتفاع الأصلي */
     overflow-y: scroll;
     background-color: #222;
     padding: 20px;
-    margin-top: 40px;
+    margin-top: auto; /* لدفع الحاوية إلى الأسفل */
     box-sizing: border-box;
     white-space: pre-wrap;
-    font-size: 1em;
+    font-size: 16px; /* حجم ثابت للخط */
     border-radius: 25px;
     border: 5px solid #555;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    margin-bottom: 55px;
   }
   #logs div {
     margin-bottom: 10px;
   }
   h1 {
-    font-size: 6em;
+    font-size: 6em; /* حجم خط filename logs */
     font-weight: bold;
     font-family: 'Arial', sans-serif;
     color: #fff;
@@ -104,13 +104,24 @@ document.addEventListener('DOMContentLoaded', function () {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px 2px; 
+    margin: 4px 2px;
     cursor: pointer;
-    position: fixed; 
+    position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 10px;
+    bottom: 0px;
+    margin-bottom: 20px; /*هامش أسفل الزر */
   }
+  label {
+    font-size: 25px;
+    color: #fff; 
+  }
+
+  #autoScroll {
+    width: 30px;
+    height: 30px;
+  }
+
 </style>
 </head>
 <body>
