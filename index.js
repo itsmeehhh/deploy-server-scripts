@@ -29,7 +29,6 @@ function runFile(file) {
   logs[file] = [];
   child.stdout.on('data', (data) => {
     const message = data.toString();
-    console.log(message);
     logs[file].push(message);
     io.emit('newLog', { file, message });
   });
@@ -47,7 +46,7 @@ function runFile(file) {
     }
   });
   child.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
+    console.log(`${file}: exited with code ${code}`);
     io.emit('newLog', { file, message: `Process exited with code ${code}` });
   });
   children[file] = child;
