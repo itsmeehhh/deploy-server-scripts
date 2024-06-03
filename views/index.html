@@ -32,19 +32,6 @@
       border-radius: 50%;
       margin-bottom: 20px;
     }
-    form {
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-    input {
-      display: block;
-      width: 80%;
-      height: 40px;
-      border: 1px solid #0078d4;
-      border-radius: 5px;
-      margin: 10px auto;
-      padding: 10px;
-    }
     button {
       display: block;
       width: 60%;
@@ -64,9 +51,6 @@
         width: 150px;
         height: 150px;
       }
-      input {
-        height: 30px;
-      }
       button {
         height: 40px;
       }
@@ -76,61 +60,14 @@
 <body>
   <h1>MoroccoAI Servers</h1>
   <img src="https://telegra.ph/file/1f6dbd646e3605f4a0895.png" alt="dev img">
-  <form id="user-form">
-    <input type="text" id="token" name="token" placeholder="Enter your github token" required>
-    <input type="text" id="owner" name="owner" placeholder="Enter your user name " required>
-    <input type="text" id="repo" name="repo" placeholder="Enter your repo name" required>
-    <button type="submit" id="submit">start deploy</button>
-    <button type="button" id="re_submit">stop deploy</button>
-    </form>
+  <!-- أزرار جديدة لفتح الروابط -->
+  <button onclick="window.location.href='/deploy-page';">deploy script</button>
+  <button onclick="window.location.href='/deploy-code';">deploy code</button>
+  <button onclick="window.location.href='/deploy-datas';">database</button>
+  <button onclick="window.location.href='';">test</button>
   <footer>
-  <p>-- How to get GitHub token? <a href="/tutorialtoken">Here's how</a></p>
-  <p>-- developer page on <a href="https://fb.com/Morocco.openai">Facebook</a></p>
+    <p>-- developer page on <a href="https://fb.com/Morocco.openai">Facebook</a></p>
   </footer>
-    <script>
-    const form = document.getElementById("user-form");
-    const token = document.getElementById("token");
-    const owner = document.getElementById("owner");
-    const repo = document.getElementById("repo");
-    const submit = document.getElementById("submit");
-    const re_submitButton = document.getElementById("re_submit"); form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const tokenValue = token.value;
-      const ownerValue = owner.value;
-      const repoValue = repo.value;
-      const url = `/adduser?token=${tokenValue}&owner=${ownerValue}&repo=${repoValue}`;
-      fetch(url)
-        .then((response) => response.text())
-        .then((data) => {
-          alert(data);
-          token.value = "";
-          owner.value = "";
-          repo.value = "";
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    });
-    re_submitButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      const tokenValue = token.value;
-      const ownerValue = owner.value;
-      const repoValue = repo.value;
-      const url = `/deleteuser?token=${tokenValue}&owner=${ownerValue}&repo=${repoValue}`;
-
-      fetch(url)
-        .then((response) => response.text())
-        .then((data) => {
-          alert(data);
-          token.value = "";
-          owner.value = "";
-          repo.value = "";
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    });
-  </script>
 </body>
 </html>
 <!--Coded By MoroccoAI Team (Oussama&Amin)-->

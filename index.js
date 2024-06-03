@@ -290,10 +290,10 @@ app.get("/tutorialtoken", (req, res) => {
 
 //الصفحات الاساسية
 app.get("/deploy-page", (req, res) => {
-  res.sendFile(__dirname + "/views/index.html");
+  res.sendFile(__dirname + "/views/index2.html");
 });
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/views/index2.html");
+  res.sendFile(__dirname + "/views/index.html");
 });
 app.get("/deploy-code", (req, res) => {
   res.sendFile(__dirname + "/views/indexsave.html");
