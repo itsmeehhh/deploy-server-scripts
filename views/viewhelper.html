@@ -17,28 +17,41 @@ document.addEventListener('DOMContentLoaded', function () {
         const messageElement = document.createElement('div');
         messageElement.textContent = data.message;
         logsContainer.appendChild(messageElement);
-        // تعديل هنا: التحقق من حالة الخانة قبل التمرير
         if (autoScrollCheckbox.checked) {
           logsContainer.scrollTop = logsContainer.scrollHeight;
         }
       }
     });
-
     socket.emit('requestLogs', filename);
-
     socket.on('logs', function (logs) {
       logs.forEach(function (log) {
         const messageElement = document.createElement('div');
         messageElement.textContent = log;
         logsContainer.appendChild(messageElement);
       });
-      // تعديل هنا: التحقق من حالة الخانة قبل التمرير
       if (autoScrollCheckbox.checked) {
         logsContainer.scrollTop = logsContainer.scrollHeight;
       }
     });
-  });
 
+    const clearLogsBtn = document.createElement('button');
+    clearLogsBtn.textContent = 'delete logs';
+    clearLogsBtn.style.position = 'absolute';
+    clearLogsBtn.style.bottom = '10px';
+    clearLogsBtn.style.right = '10px';
+    document.body.appendChild(clearLogsBtn);
+
+    clearLogsBtn.addEventListener('click', function() {
+      if (confirm('هل انت متأكد انك تريد مسح السجلات الخاصة بهذا الملف؟')) {
+        fetch('/viewlogs/' + filename + '/delete')
+          .then(response => response.text())
+          .then(text => {
+            alert(text);
+            window.location.href = '/viewlogs/' + filename;
+          });
+      }
+    });
+});
 </script>
 <style>
   body {
@@ -52,7 +65,9 @@ document.addEventListener('DOMContentLoaded', function () {
     justify-content: flex-start;
     align-items: center;
     height: 100vh;
+    position: relative;
   }
+
   #logs {
     width: 80%;
     max-width: 800px;
@@ -63,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
     margin-top: 40px;
     box-sizing: border-box;
     white-space: pre-wrap;
-    font-size: 1em; /* تقليل حجم الخط ليكون أصغر */
+    font-size: 1em;
     border-radius: 25px;
     border: 5px solid #555;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -81,11 +96,26 @@ document.addEventListener('DOMContentLoaded', function () {
     padding: 20px 0;
     margin-bottom: 20px;
   }
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px; 
+    cursor: pointer;
+    position: fixed; 
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10px;
+  }
 </style>
 </head>
 <body>
 <h1 id="filename">filename logs</h1>
-<label for="autoScroll">Enable AutoScroll down</label>
+<label for="autoScroll">AutoScroll down</label>
 <input type="checkbox" id="autoScroll" checked>
 <div id="logs"></div>
 </body>

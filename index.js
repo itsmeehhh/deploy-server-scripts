@@ -11,10 +11,7 @@ const folderName = 'database';
 const children = {};
 const logs = {};
 
-
-
-
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'views')));
 
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -29,11 +26,17 @@ function runFile(file) {
   logs[file] = [];
   child.stdout.on('data', (data) => {
     const message = data.toString();
+    if (!logs[file]) {
+      logs[file] = [];
+    }
     logs[file].push(message);
     io.emit('newLog', { file, message });
   });
   child.stderr.on('data', (data) => {
     const message = data.toString();
+    if (!logs[file]) {
+      logs[file] = [];
+    }
     console.error(`${file} : Code error, see logs for more`);
     logs[file].push(message);
     io.emit('newLog', { file, message });
@@ -60,6 +63,13 @@ function stopFile(file) {
   delete children[file];
   delete logs[file];
 }
+// وظيفة لحذف كل السجلات كل 5 دقائق
+setInterval(() => {
+  Object.keys(logs).forEach((file) => {
+    delete logs[file];
+  });
+  console.log('جميع السجلات تم حذفها');
+}, 300000);
 
 function installModule(moduleName, callback) {
   exec(`npm install ${moduleName}`, (error, stdout, stderr) => {
@@ -369,6 +379,16 @@ app.get('/viewlogs/:filename', (req, res) => {
     }
     res.sendFile(path.join(__dirname, './views/viewhelper.html'));
   });
+});
+//deletelogs
+app.get('/viewlogs/:filename/delete', (req, res) => {
+  const filename = req.params.filename;
+  if (logs[filename]) {
+    delete logs[filename];
+    res.send(`سجلات الملف ${filename} تم حذفها بنجاح`);
+  } else {
+    res.status(404).send(`الملف ${filename} غير موجود أو لا توجد له سجلات`);
+  }
 });
 //حفظ ملف الى مجلد database 
 app.use(fileUpload());
