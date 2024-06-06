@@ -11,7 +11,6 @@
       const filename = window.location.pathname.split('/').pop();
       document.getElementById('filename').textContent = filename + ' logs';
 
-      // تفعيل التمرير التلقائي افتراضيًا
       let isAutoScrollActive = true;
 
       socket.on('newLog', function (data) {
@@ -19,7 +18,7 @@
               const messageElement = document.createElement('div');
               messageElement.textContent = data.message;
               logsContainer.appendChild(messageElement);
-              // التحقق من حالة التمرير التلقائي
+
               if (isAutoScrollActive) {
                   logsContainer.scrollTop = logsContainer.scrollHeight;
               }
@@ -34,15 +33,14 @@
               messageElement.textContent = log;
               logsContainer.appendChild(messageElement);
           });
-          // التحقق من حالة التمرير التلقائي
-          if (isAutoScrollActive) {
+        if (isAutoScrollActive) {
               logsContainer.scrollTop = logsContainer.scrollHeight;
           }
       });
 
       const clearLogsBtn = document.createElement('button');
       clearLogsBtn.id = 'clearLogsBtn';
-      clearLogsBtn.textContent = 'حذف السجلات';
+      clearLogsBtn.textContent = 'delete Logs';
       clearLogsBtn.style.position = 'absolute';
       clearLogsBtn.style.bottom = '10px';
       clearLogsBtn.style.right = '50%';
@@ -51,10 +49,9 @@
 
       const autoScrollBtn = document.createElement('button');
       autoScrollBtn.id = 'autoScrollBtn';
-      autoScrollBtn.textContent = 'تمرير تلقائي للأسفل';
+      autoScrollBtn.textContent = 'Auto Scroll';
       autoScrollBtn.classList.add('auto-scroll');
-      // تعيين لون الزر بناءً على حالة التمرير التلقائي
-      autoScrollBtn.style.backgroundColor = isAutoScrollActive ? '#1C1B1B' : '#404040';
+     autoScrollBtn.style.backgroundColor = isAutoScrollActive ? '#1C1B1B' : '#404040';
       autoScrollBtn.style.position = 'absolute';
       autoScrollBtn.style.bottom = '10px';
       autoScrollBtn.style.left = '50%';
@@ -63,9 +60,9 @@
 
       clearLogsBtn.addEventListener('click', deleteLogs);
       autoScrollBtn.addEventListener('click', function() {
-          // تبديل حالة التمرير التلقائي
+       
           isAutoScrollActive = !isAutoScrollActive;
-          // تغيير لون الزر بناءً على حالة التمرير التلقائي
+          
           this.style.backgroundColor = isAutoScrollActive ? '#1C1B1B' : '#404040';
       });
 
@@ -80,10 +77,8 @@
           }
       }
 
-      // حساب العرض الأقصى بناءً على النص داخل الأزرار
       const maxWidth = Math.max(clearLogsBtn.offsetWidth, autoScrollBtn.offsetWidth);
 
-      // تطبيق العرض الأقصى على كلا الزرين
       clearLogsBtn.style.width = maxWidth + 'px';
       autoScrollBtn.style.width = maxWidth + 'px';
   });
@@ -136,24 +131,24 @@
     }
 
     button {
-      background-color: #4CAF50; /* لون الخلفية */
-      color: white; /* لون النص */
-      padding: 25px 40px; /* الحشوة */
-      text-align: center; /* محاذاة النص */
-      text-decoration: none; /* عدم وجود تزيين للنص */
-      display: inline-block; /* نوع العرض */
-      font-size: 20px; /* حجم الخط */
-      margin: 4px 2px; /* الهوامش */
-      cursor: pointer; /* شكل المؤشر */
-      position: fixed; /* الوضعية */
-      bottom: 10px; /* البعد عن الأسفل */
-      border-radius: 50px; /* جعل الحواف دائرية */
+      background-color: #4CAF50; 
+      color: white; 
+      padding: 25px 40px; 
+      text-align: center; 
+      text-decoration: none; 
+      display: inline-block; 
+      font-size: 20px; 
+      margin: 4px 2px; 
+      cursor: pointer; 
+      position: fixed; 
+      bottom: 10px; 
+      border-radius: 50px; 
     }
 
     #clearLogsBtn {
-      background-color: #1C1B1B; /* لون الخلفية */
-      color: #FFEDED; /* لون النص */
-      border-radius: 50px; /* جعل الحواف دائرية */
+      background-color: #1C1B1B; 
+      color: #FFEDED; 
+      border-radius: 50px;
     }
 
 </style>
