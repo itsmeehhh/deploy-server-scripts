@@ -1,57 +1,93 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
 <title>مشاهدة السجلات</title>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const socket = io.connect();
-    const logsContainer = document.getElementById('logs');
-    const autoScrollCheckbox = document.getElementById('autoScroll');
-    const filename = window.location.pathname.split('/').pop();
-    document.getElementById('filename').textContent = filename + ' logs';
+  document.addEventListener('DOMContentLoaded', function () {
+      const socket = io.connect();
+      const logsContainer = document.getElementById('logs');
+      const filename = window.location.pathname.split('/').pop();
+      document.getElementById('filename').textContent = filename + ' logs';
 
-    socket.on('newLog', function (data) {
-      if (data.file === filename) {
-        const messageElement = document.createElement('div');
-        messageElement.textContent = data.message;
-        logsContainer.appendChild(messageElement);
-        if (autoScrollCheckbox.checked) {
-          logsContainer.scrollTop = logsContainer.scrollHeight;
-        }
-      }
-    });
-    socket.emit('requestLogs', filename);
-    socket.on('logs', function (logs) {
-      logs.forEach(function (log) {
-        const messageElement = document.createElement('div');
-        messageElement.textContent = log;
-        logsContainer.appendChild(messageElement);
+      // تفعيل التمرير التلقائي افتراضيًا
+      let isAutoScrollActive = true;
+
+      socket.on('newLog', function (data) {
+          if (data.file === filename) {
+              const messageElement = document.createElement('div');
+              messageElement.textContent = data.message;
+              logsContainer.appendChild(messageElement);
+              // التحقق من حالة التمرير التلقائي
+              if (isAutoScrollActive) {
+                  logsContainer.scrollTop = logsContainer.scrollHeight;
+              }
+          }
       });
-      if (autoScrollCheckbox.checked) {
-        logsContainer.scrollTop = logsContainer.scrollHeight;
-      }
-    });
 
-    const clearLogsBtn = document.createElement('button');
-    clearLogsBtn.textContent = 'delete logs';
-    clearLogsBtn.style.position = 'absolute';
-    clearLogsBtn.style.bottom = '10px';
-    clearLogsBtn.style.right = '10px';
-    document.body.appendChild(clearLogsBtn);
+      socket.emit('requestLogs', filename);
 
-    clearLogsBtn.addEventListener('click', function() {
-      if (confirm('هل انت متأكد انك تريد مسح السجلات الخاصة بهذا الملف؟')) {
-        fetch('/viewlogs/' + filename + '/delete')
-          .then(response => response.text())
-          .then(text => {
-            alert(text);
-            window.location.href = '/viewlogs/' + filename;
+      socket.on('logs', function (logs) {
+          logs.forEach(function (log) {
+              const messageElement = document.createElement('div');
+              messageElement.textContent = log;
+              logsContainer.appendChild(messageElement);
           });
+          // التحقق من حالة التمرير التلقائي
+          if (isAutoScrollActive) {
+              logsContainer.scrollTop = logsContainer.scrollHeight;
+          }
+      });
+
+      const clearLogsBtn = document.createElement('button');
+      clearLogsBtn.id = 'clearLogsBtn';
+      clearLogsBtn.textContent = 'حذف السجلات';
+      clearLogsBtn.style.position = 'absolute';
+      clearLogsBtn.style.bottom = '10px';
+      clearLogsBtn.style.right = '50%';
+      clearLogsBtn.style.marginRight = '60px';
+      document.body.appendChild(clearLogsBtn);
+
+      const autoScrollBtn = document.createElement('button');
+      autoScrollBtn.id = 'autoScrollBtn';
+      autoScrollBtn.textContent = 'تمرير تلقائي للأسفل';
+      autoScrollBtn.classList.add('auto-scroll');
+      // تعيين لون الزر بناءً على حالة التمرير التلقائي
+      autoScrollBtn.style.backgroundColor = isAutoScrollActive ? '#1C1B1B' : '#404040';
+      autoScrollBtn.style.position = 'absolute';
+      autoScrollBtn.style.bottom = '10px';
+      autoScrollBtn.style.left = '50%';
+      autoScrollBtn.style.marginLeft = '60px';
+      document.body.appendChild(autoScrollBtn);
+
+      clearLogsBtn.addEventListener('click', deleteLogs);
+      autoScrollBtn.addEventListener('click', function() {
+          // تبديل حالة التمرير التلقائي
+          isAutoScrollActive = !isAutoScrollActive;
+          // تغيير لون الزر بناءً على حالة التمرير التلقائي
+          this.style.backgroundColor = isAutoScrollActive ? '#1C1B1B' : '#404040';
+      });
+
+      function deleteLogs() {
+          if (confirm('هل انت متأكد انك تريد مسح السجلات الخاصة بهذا الملف؟')) {
+              fetch('/viewlogs/' + filename + '/delete')
+                  .then(response => response.text())
+                  .then(text => {
+                      alert(text);
+                      window.location.href = '/viewlogs/' + filename;
+                  });
+          }
       }
-    });
-});
+
+      // حساب العرض الأقصى بناءً على النص داخل الأزرار
+      const maxWidth = Math.max(clearLogsBtn.offsetWidth, autoScrollBtn.offsetWidth);
+
+      // تطبيق العرض الأقصى على كلا الزرين
+      clearLogsBtn.style.width = maxWidth + 'px';
+      autoScrollBtn.style.width = maxWidth + 'px';
+  });
+
 </script>
 <style>
   body {
@@ -62,32 +98,34 @@ document.addEventListener('DOMContentLoaded', function () {
     font-family: 'Courier New', Courier, monospace;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* تغيير لضمان أن الحاوية في الأسفل */
+    justify-content: flex-end;
     align-items: center;
     position: relative;
     overflow: hidden;
   }
 
   #logs {
-    width: 800px; /* ثابت بدلاً من النسب المئوية */
-    height: 1000px; /* ضعف الارتفاع الأصلي */
+    width: 800px;
+    height: 1000px;
     overflow-y: scroll;
     background-color: #222;
     padding: 20px;
-    margin-top: auto; /* لدفع الحاوية إلى الأسفل */
+    margin-top: auto;
     box-sizing: border-box;
     white-space: pre-wrap;
-    font-size: 16px; /* حجم ثابت للخط */
+    font-size: 16px;
     border-radius: 25px;
     border: 5px solid #555;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     margin-bottom: 55px;
   }
+
   #logs div {
     margin-bottom: 10px;
   }
+
   h1 {
-    font-size: 6em; /* حجم خط filename logs */
+    font-size: 6em;
     font-weight: bold;
     font-family: 'Arial', sans-serif;
     color: #fff;
@@ -107,27 +145,16 @@ document.addEventListener('DOMContentLoaded', function () {
     margin: 4px 2px;
     cursor: pointer;
     position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 0px;
-    margin-bottom: 20px; /*هامش أسفل الزر */
+    bottom: 10px;
   }
-  label {
-    font-size: 25px;
-    color: #fff; 
-  }
-
-  #autoScroll {
-    width: 30px;
-    height: 30px;
-  }
-
+    #clearLogsBtn {
+        background-color: #1C1B1B; 
+        color: #FFEDED;
+    }
 </style>
 </head>
 <body>
 <h1 id="filename">filename logs</h1>
-<label for="autoScroll">AutoScroll down</label>
-<input type="checkbox" id="autoScroll" checked>
 <div id="logs"></div>
 </body>
 </html>
