@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoroccoAI Servers</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap');
+    body {
+      font-family: 'Ubuntu', sans-serif;
+      text-align: center;
+      background-color: #968D8D;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .box {
+      width: 300px;
+      height: 400px;
+      padding: 20px;
+      position: relative;
+      text-align: center;
+      background-color: rgba(255,255,255,0.5);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    }
+    .input-container {
+      display: flex;
+      background: white;
+      border-radius: 5px;
+      padding: 10px;
+      gap: 10px;
+      max-width: 300px;
+      width: 100%;
+      margin: 10px auto;
+    }
+    .input-container input {
+      width: 80%;
+      height: 40px;
+      border: 1px solid #0078d4;
+      border-radius: 5px;
+      padding: 10px;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    .input-container button {
+      width: 60%;
+      height: 50px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Ubuntu', sans-serif;
+      text-transform: uppercase;
+    }
+    .centered-text {
+      font-family: 'Ubuntu', sans-serif;
+      color: #0078d4;
+    }
+    @media (max-width: 600px) {
+      .input-container input {
+        height: 30px;
+      }
+      .input-container button {
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="main">
+      <div class="box" id="box">
+        <div id="text">
+          <i class="fa fa-user-circle" style="font-size: 40px; color: #000;"></i>
+          <h3 class="centered-text">MoroccoAI Server</h3>
+          <h6>ادخل رقم الهاتف الخاص بك</h6>
+          <div class="input-container">
+            <input placeholder="2127xxxxxxxx" type="number" id="number" name="">
+            <button id="submit">enter</button>
+          </div>
+          <a id="waiting-message" class="centered-text" style="display: none;">in process...</a>
+          <main id="pair"></main>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- الجافاسكريبت يبقى كما هو دون تغيير -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"></script>
+  <script>
+let a = document.getElementById("pair");
+    let b = document.getElementById("submit");
+    let c = document.getElementById("number");
+    let box = document.getElementById("box");
+
+    async function Copy() {
+      let text = document.getElementById("copy").innerText;
+      let obj = document.getElementById("copy");
+      await navigator.clipboard.writeText(obj.innerText.replace('اضغط لنسخ الكود\n', ''));
+      obj.innerText = "تم النسخ بنجاح";
+      obj.style = "color:blue;font-weight:bold";
+      obj.size = "5";
+      setTimeout(() => {
+        obj.innerText = text;
+        obj.style = "color:black;font-weight-bold";
+        obj.size = "5";
+      }, 500);
+    }
+
+    b.addEventListener("click", async (e) => {
+      e.preventDefault();
+      if (!c.value) {
+        a.innerHTML = '<a style="color:black;font-weight:bold">يرجى ادخال رقم الهاتف مع رمز الدولة (مثلا +212...)</a><br><br>';
+      } else if (c.value.replace(/[^0-9]/g, "").length < 11) {
+        a.innerHTML = '<a style="color:black;font-weight:bold">Invalid number format</a><br><br>';
+      } else {
+        const bc = c.value.replace(/[^0-9]/g, "");
+        let bb = "";
+        let bbc = "";
+        const cc = bc.split('');
+        cc.map(a => {
+          bbc += a;
+          if (bbc.length == 3) {
+            bb += " " + a;
+          } else if (bbc.length == 8) {
+            bb += " " + a;
+          } else {
+            bb += a;
+          }
+        });
+        c.type = "text";
+        c.value = "+" + bb;
+        c.style = "color:black;font-size:20px";
+        a.innerHTML = '<a style="color:black;font-weight:bold">انتظر قليلا</a><br><br>';
+        let { data } = await axios(`/code?number=${bc}`);
+        let code = data.code || "Service Unavailable";
+        a.innerHTML = '<font id="copy" onclick="Copy()" style="color:red;font-weight:bold" size="5">اضغط لنسخ الكود <span style="color:black;font-weight:bold"><br>' + code + '</span></font><br><br><br>';
+      }
+    });
+  </script>
+</body>
+</html>
+<!-- coded by MoroccoAI Team ( oussama & amin ) -->

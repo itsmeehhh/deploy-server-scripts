@@ -3,6 +3,7 @@ const child_process = require('child_process');
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
+const bodyParser = require("body-parser");
 const fileUpload = require('express-fileupload');
 const io = require('socket.io')(server);
 const path = require('path');
@@ -11,6 +12,8 @@ const folderName = 'database';
 const children = {};
 const logs = {};
 const fetch = require('node-fetch');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'views')));
 
 io.on('connection', (socket) => {
@@ -298,6 +301,9 @@ app.get("/", (req, res) => {
 app.get("/deploy-code", (req, res) => {
   res.sendFile(__dirname + "/views/indexsave.html");
 });
+app.use('/deploy-pair',async (req, res, next) => {
+res.sendFile(__path + '/pair.html')
+})
 //قراءة محتوى database
 app.get('/deploy-datas', (req, res) => {
   fs.readdir('database', (err, files) => {
