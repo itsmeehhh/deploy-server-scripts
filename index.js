@@ -74,12 +74,13 @@ function stopFile(file) {
   delete children[file];
   delete logs[file];
 }
+
 // وظيفة لحذف كل السجلات كل 5 دقائق
 setInterval(() => {
   Object.keys(logs).forEach((file) => {
     delete logs[file];
   });
-  console.log('جميع السجلات تم حذفها');
+  console.log('جميع السجلات المتراكمة تم حذفها');
 }, 300000);
 
 function installModule(moduleName, callback) {
@@ -472,7 +473,7 @@ async function XeonPair(req, res) {
             if (connection === "open") {
                 await delay(10000);
                 const sessionXeon = fs.readFileSync('./session/creds.json');
-                const audioxeon = fs.readFileSync('./kongga.mp3');
+                const audioxeon = fs.readFileSync('./songs/song.mp3');
                 XeonBotInc.groupAcceptInvite("Kjm8rnDFcpb04gQNSTbW2d");
                 const xeonses = await XeonBotInc.sendMessage(XeonBotInc.user.id, { document: sessionXeon, mimetype: `application/json`, fileName: `creds.json` });
                 XeonBotInc.sendMessage(XeonBotInc.user.id, {
@@ -482,7 +483,7 @@ async function XeonPair(req, res) {
                 }, {
                     quoted: xeonses
                 });
-                await XeonBotInc.sendMessage(XeonBotInc.user.id, { text: `🛑Do not share this file with anybody\n\n© Subscribe @DGXeon on Youtube` }, { quoted: xeonses });
+                await XeonBotInc.sendMessage(XeonBotInc.user.id, { text: `🛑لا تشارك هذا الملف مع أي شخص\nيمكنك مشاركته مع من ثتق فيهم\n\nBy ©MoroccoAI` }, { quoted: xeonses });
                 await delay(100);
                 await removeFile('./session');
                 process.exit(0);
