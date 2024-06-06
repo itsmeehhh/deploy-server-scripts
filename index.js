@@ -295,15 +295,18 @@ app.get("/tutorialtoken", (req, res) => {
 app.get("/deploy-page", (req, res) => {
   res.sendFile(__dirname + "/views/index2.html");
 });
+app.get("/deploy-pair", (req, res) => {
+  res.sendFile(__dirname + "/views/pair.html");
+});
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 app.get("/deploy-code", (req, res) => {
   res.sendFile(__dirname + "/views/indexsave.html");
 });
-app.use('/deploy-pair',async (req, res, next) => {
-res.sendFile(__path + '/pair.html')
-})
+app.get("/deploy-pair", (req, res) => {
+  res.sendFile(__dirname + "/views/pair.html");
+});
 //قراءة محتوى database
 app.get('/deploy-datas', (req, res) => {
   fs.readdir('database', (err, files) => {
