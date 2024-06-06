@@ -81,6 +81,21 @@ yarn add tesseract.js@3.0.3
 * [Local Installation](./docs/local-installation.md)
 * [FAQ](./docs/faq.md)
 
+## Community Projects and Examples
+The following are examples and projects built by the community using Tesseract.js. Officially supported examples are found in the [examples](https://github.com/naptha/tesseract.js/tree/master/examples) directory. 
+
+- Projects
+   - Scribe OCR: web application for scanning documents (images and PDFs)
+      - Site at [scribeocr.com](https://scribeocr.com/), repo at [github.com/scribeocr/scribeocr](https://github.com/scribeocr/scribeocr)
+   - Chrome Extension (with Manifest V3): https://github.com/Tshetrim/Image-To-Text-OCR-extension-for-ChatGPT
+- Examples
+   - Converting PDF to text: https://github.com/racosa/pdf2text-ocr
+   - Use `blocks` output to generate granular data [word/symbol level]: https://github.com/Kishlay-notabot/tesseract-bbox-examples
+   - Electron: https://github.com/Balearica/tesseract.js-electron
+   - Typescript: https://github.com/Balearica/tesseract.js-typescript
+ 
+If you have a project or example repo that uses Tesseract.js, feel free to add it to this list using a pull request. Examples submitted should be well documented such that new users can run them; projects should be functional and actively maintained.
+
 ## Major changes in v5
 Version 5 changes are documented in [this issue](https://github.com/naptha/tesseract.js/issues/820).  Highlights are below.
 
@@ -118,24 +133,6 @@ Version 4 includes many new features and bug fixes--see [this issue](https://git
    - ASM.js version, any other old versions of Tesseract.js-core (<3.0.0) 
    - Node.js versions 10 and 12
 
-
-## Use tesseract.js the way you like!
-
-- Electron Version: https://github.com/Balearica/tesseract.js-electron
-- Typescript: https://github.com/Balearica/tesseract.js-typescript
-- Chrome Extension (with Manifest V3): https://github.com/Tshetrim/Image-To-Text-OCR-extension-for-ChatGPT
-- Converting PDF to text: https://github.com/racosa/pdf2text-ocr
-
-The following are old examples that use depreciated versions of Tesseract.js.  Updating to Tesseract.js v5 is highly recommended.  Users are encouraged to create updated examples (or make entirely new ones) and submit them as pull requests. 
-- Offline Version: https://github.com/jeromewu/tesseract.js-offline
-- Firefox Extension: https://github.com/gnonio/korporize
-- With Vue: https://github.com/jeromewu/tesseract.js-vue-app
-- With Angular: https://github.com/jeromewu/tesseract.js-angular-app
-- With React: https://github.com/jeromewu/tesseract.js-react-app
-- Video Real-time Recognition: https://github.com/jeromewu/tesseract.js-video
-
-React Native is **not** supported as it does not support Webassembly.
-
 ## Contributing
 
 ### Development
@@ -152,14 +149,14 @@ npm install
 npm start
 ```
 
-The development server will be available at http://localhost:3000/examples/browser/demo.html in your favorite browser.
+The development server will be available at http://localhost:3000/examples/browser/basic-efficient.html in your favorite browser.
 It will automatically rebuild `tesseract.min.js` and `worker.min.js` when you change files in the **src** folder.
 
 ### Online Setup with a single Click
 
 You can use Gitpod(A free online VS Code like IDE) for contributing. With a single click it will launch a ready to code workspace with the build & start scripts already in process and within a few seconds it will spin up the dev server so that you can start contributing straight away without wasting any time. 
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/naptha/tesseract.js/blob/master/examples/browser/demo.html)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/naptha/tesseract.js/blob/master/examples/browser/basic-efficient.html)
 
 ### Building Static Files
 To build the compiled static files just execute the following:
@@ -172,7 +169,7 @@ This will output the files into the `dist` directory.
 
 ### Code Contributors
 
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+This project exists thanks to all the people who contribute. [[Contribute](https://github.com/naptha/tesseract.js?tab=readme-ov-file#contributing)].
 <a href="https://github.com/naptha/tesseract.js/graphs/contributors"><img src="https://opencollective.com/tesseractjs/contributors.svg?width=890&button=false" /></a>
 
 ### Financial Contributors

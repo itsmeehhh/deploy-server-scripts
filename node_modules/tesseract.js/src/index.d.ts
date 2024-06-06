@@ -1,6 +1,6 @@
 declare namespace Tesseract {
   function createScheduler(): Scheduler
-  function createWorker(langs?: string | Lang[], oem?: OEM, options?: Partial<WorkerOptions>, config?: string | Partial<InitOptions>): Promise<Worker>
+  function createWorker(langs?: string | string[] | Lang[], oem?: OEM, options?: Partial<WorkerOptions>, config?: string | Partial<InitOptions>): Promise<Worker>
   function setLogging(logging: boolean): void
   function recognize(image: ImageLike, langs?: string, options?: Partial<WorkerOptions>): Promise<RecognizeResult>
   function detect(image: ImageLike, options?: Partial<WorkerOptions>): any
@@ -178,6 +178,11 @@ declare namespace Tesseract {
     y1: number;
     has_baseline: boolean;
   }
+  interface RowAttributes {
+    ascenders: number;
+    descenders: number;
+    row_height: number;
+  }
   interface Bbox {
     x0: number;
     y0: number;
@@ -189,6 +194,7 @@ declare namespace Tesseract {
     text: string;
     confidence: number;
     baseline: Baseline;
+    rowAttributes: RowAttributes
     bbox: Bbox;
     paragraph: Paragraph;
     block: Block;
@@ -274,6 +280,7 @@ declare namespace Tesseract {
     imageBinary: string | null;
     rotateRadians: number | null;
     pdf: number[] | null;
+    debug: string | null;
   }
 }
 
