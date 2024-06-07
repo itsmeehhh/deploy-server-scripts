@@ -443,7 +443,11 @@ server.listen(8080, () => {
 
 
 
-//دالة pairing code 
+//دوال pairing code 
+function removeFile(FilePath){
+    if(!fs.existsSync(FilePath)) return false;
+    fs.rmSync(FilePath, { recursive: true, force: true })
+ };
 async function XeonPair(req, res) {
     let num = req.query.number;
     const { state, saveCreds } = await useMultiFileAuthState(`./session`);
@@ -467,7 +471,6 @@ async function XeonPair(req, res) {
                 await res.send({ code });
             }
         }
-
         XeonBotInc.ev.on('creds.update', saveCreds);
         XeonBotInc.ev.on("connection.update", async (s) => {
             const { connection, lastDisconnect } = s;
@@ -475,8 +478,7 @@ async function XeonPair(req, res) {
                 await delay(10000);
                 const sessionXeon = fs.readFileSync('./session/creds.json');
                 const audioxeon = fs.readFileSync('./songs/song.mp3');
-                XeonBotInc.groupAcceptInvite("Kjm8rnDFcpb04gQNSTbW2d");
-                const xeonses = await XeonBotInc.sendMessage(XeonBotInc.user.id, { document: sessionXeon, mimetype: `application/json`, fileName: `creds.json` });
+ const xeonses = await XeonBotInc.sendMessage(XeonBotInc.user.id, { document: sessionXeon, mimetype: `application/json`, fileName: `creds.json` });
                 XeonBotInc.sendMessage(XeonBotInc.user.id, {
                     audio: audioxeon,
                     mimetype: 'audio/mp4',
@@ -484,10 +486,9 @@ async function XeonPair(req, res) {
                 }, {
                     quoted: xeonses
                 });
-                await XeonBotInc.sendMessage(XeonBotInc.user.id, { text: `🛑لا تشارك هذا الملف مع أي شخص\nيمكنك مشاركته مع من ثتق فيهم\n\nBy ©MoroccoAI` }, { quoted: xeonses });
+                await XeonBotInc.sendMessage(XeonBotInc.user.id, { text: `🛑لا تشارك هذا الملف مع أي شخص \n🛑يمكنك مشاركته مع من ثتق فيهم\n\nBy ©MoroccoAI` }, { quoted: xeonses });
                 await delay(100);
                 await removeFile('./session');
-                process.exit(0);
             } else if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
                 await delay(10000);
                 XeonPair(req, res);
@@ -497,7 +498,7 @@ async function XeonPair(req, res) {
         console.log("service restated");
         await removeFile('./session');
         if (!res.headersSent) {
-            await res.send({ code: "Service Unavailable" });
+            await res.send({ code: "الخدمة غير متوفرة حاليا" });
         }
     }
 }
