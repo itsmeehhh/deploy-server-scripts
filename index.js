@@ -80,8 +80,6 @@ setInterval(() => {
   Object.keys(logs).forEach((file) => {
     delete logs[file];
   });
-  console.clear();
-  console.log('جميع السجلات المتراكمة تم حذفها');
 }, 300000);
 
 function installModule(moduleName, callback) {
