@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
     socket.emit('logs', logs[filename]);
   });
 });
-//وظائف GitHub action 
+//وظائف تشغيل الملفات 
 function runFile(file) {
   const filePath = `./${folderName}/${file}`;
   const child = child_process.spawn('node', [filePath]);
