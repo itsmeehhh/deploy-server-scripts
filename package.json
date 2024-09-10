@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "@octokit/rest": "^20.1.1",
-    "@whiskeysockets/baileys": "^6.7.4",
     "aki-api": "^6.0.9",
     "apk-dl.js": "^1.0.0",
     "betabotz-tools": "^0.0.7",
