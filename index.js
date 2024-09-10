@@ -10,12 +10,7 @@ const io = require('socket.io')(server);
 const path = require('path');
 const { exec } = require('child_process');
 const fetch = require('node-fetch');
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    delay,
-    makeCacheableSignalKeyStore
-} = require("@whiskeysockets/baileys");
+
 
 const folderName = 'database';
 const children = {};
@@ -303,19 +298,12 @@ app.get("/tutorialtoken", (req, res) => {
 app.get("/deploy-page", (req, res) => {
   res.sendFile(__dirname + "/views/index2.html");
 });
-app.get("/deploy-pair", (req, res) => {
-  res.sendFile(__dirname + "/views/pair.html");
-});
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 app.get("/deploy-code", (req, res) => {
   res.sendFile(__dirname + "/views/indexsave.html");
 });
-app.get("/deploy-pair", (req, res) => {
-  res.sendFile(__dirname + "/views/pair.html");
-});
-app.get('/code', XeonPair);
 
 //قراءة محتوى database
 app.get('/deploy-datas', (req, res) => {
@@ -437,73 +425,4 @@ app.get('*', (req, res) => {
 });
 server.listen(8080, () => {
   console.log('Server is running on port 8080');
-});
-
-
-
-//دوال pairing code 
-function removeFile(FilePath){
-    if(!fs.existsSync(FilePath)) return false;
-    fs.rmSync(FilePath, { recursive: true, force: true })
- };
-async function XeonPair(req, res) {
-    let num = req.query.number;
-    const { state, saveCreds } = await useMultiFileAuthState(`./session`);
-
-    try {
-        let XeonBotInc = makeWASocket({
-            auth: {
-                creds: state.creds,
-                keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
-            },
-            printQRInTerminal: false,
-            logger: pino({ level: "fatal" }).child({ level: "fatal" }),
-            browser: ["Ubuntu", "Chrome", "20.0.04"],
-        });
-
-        if (!XeonBotInc.authState.creds.registered) {
-            await delay(1500);
-            num = num.replace(/[^0-9]/g, '');
-            const code = await XeonBotInc.requestPairingCode(num);
-            if (!res.headersSent) {
-                await res.send({ code });
-            }
-        }
-        XeonBotInc.ev.on('creds.update', saveCreds);
-        XeonBotInc.ev.on("connection.update", async (s) => {
-            const { connection, lastDisconnect } = s;
-            if (connection === "open") {
-                await delay(10000);
-                const sessionXeon = fs.readFileSync('./session/creds.json');
-                const audioxeon = fs.readFileSync('./songs/song.mp3');
- const xeonses = await XeonBotInc.sendMessage(XeonBotInc.user.id, { document: sessionXeon, mimetype: `application/json`, fileName: `creds.json` });
-                XeonBotInc.sendMessage(XeonBotInc.user.id, {
-                    audio: audioxeon,
-                    mimetype: 'audio/mp4',
-                    ptt: true
-                }, {
-                    quoted: xeonses
-                });
-                await XeonBotInc.sendMessage(XeonBotInc.user.id, { text: `🛑لا تشارك هذا الملف مع أي شخص \n🛑يمكنك مشاركته مع من ثتق فيهم\n\nBy ©MoroccoAI` }, { quoted: xeonses });
-                await delay(100);
-                await removeFile('./session');
-            } else if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
-                await delay(10000);
-                XeonPair(req, res);
-            }
-        });
-    } catch (err) {
-        console.log("service restated");
-        await removeFile('./session');
-        if (!res.headersSent) {
-            await res.send({ code: "الخدمة غير متوفرة حاليا" });
-        }
-    }
-}
-process.on('uncaughtException', function (err) {
-    let e = String(err);
-    if (e.includes("conflict") || e.includes("Socket connection timeout") || e.includes("not-authorized") || e.includes("rate-overlimit") || e.includes("Connection Closed") || e.includes("Timed Out") || e.includes("Value not found")) {
-        return;
-    }
-    console.log('Caught exception: ', err);
 });
